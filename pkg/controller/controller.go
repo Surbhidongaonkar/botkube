@@ -163,13 +163,16 @@ func sendEvent(obj, oldObj interface{}, c *config.Config, notifiers []notify.Not
 
 	// check for siginificant Update Events in objects
 	if eventType == config.UpdateEvent {
-		updateMsg := utils.Diff(oldObj, obj)
-		if len(updateMsg) > 0 {
-			event.Messages = append(event.Messages, updateMsg)
-		} else {
-			// skipping least significant update
-			log.Logger.Debug("skipping least significant Update event")
-			event.Skip = true
+		updateconfig, exists := utils.AllowedUpdateEventsMap[utils.KindNS{Resource: kind, Namespace: "all"}]
+		if exists {
+			updateMsg := utils.Diff(oldObj, obj, updateconfig)
+			if len(updateMsg) > 0 {
+				event.Messages = append(event.Messages, updateMsg)
+			} else {
+				// skipping least significant update
+				log.Logger.Debug("skipping least significant Update event")
+				event.Skip = true
+			}
 		}
 	}
 

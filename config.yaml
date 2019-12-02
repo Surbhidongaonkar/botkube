@@ -28,10 +28,15 @@ resources:
         - 
     events:
       - create
-      - update
       - delete
       - update
       - error
+    updateConfig:
+      includeDiff: true
+      fields:
+        - status
+        - metadata
+        - spec
   - name: statefulset
     namespaces:
       include:  
